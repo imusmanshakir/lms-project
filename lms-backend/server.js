@@ -9,7 +9,13 @@ import path from "path";
 const app = express();
 
 // Middleware
-app.use(cors('*'));
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://lms-omega.vercel.app"
+  ],
+  credentials: true
+}))
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // Database
