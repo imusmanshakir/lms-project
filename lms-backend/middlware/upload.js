@@ -1,6 +1,5 @@
 import multer from "multer";
 import path from "path";
-
 // storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -26,3 +25,23 @@ export const uploadStudentImage = multer({
   fileFilter,
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
 });
+
+//if you prefre to use cloudinary storage uncomment below code and comment above code
+// import { CloudinaryStorage } from "multer-storage-cloudinary";
+// import cloudinary from "../utils/cloudinary.js";
+
+// const studentStorage = new CloudinaryStorage({
+//   cloudinary,
+//   params: {
+//     folder: "lms/students",   // Cloudinary folder
+//     allowed_formats: ["jpg", "png", "jpeg", "webp"],
+//     public_id: (req, file) => {
+//       return `student_${Date.now()}`;
+//     },
+//   },
+// });
+
+// export const uploadStudentImage = multer({
+//   storage: studentStorage,
+// });
+

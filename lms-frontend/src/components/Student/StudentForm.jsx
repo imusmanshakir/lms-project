@@ -69,7 +69,7 @@ const StudentForm = ({ studentToEdit = null, onSaved = () => {} }) => {
       } else {
         // CREATE
         await api.post("/api/students/add", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+       headers: { "Content-Type": "multipart/form-data" },
         });
         setSuccess("Student added successfully!");
         resetForm();

@@ -12,9 +12,8 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://usman-lms.vercel.app"
   ],
-  credentials: true
+  credentials: true,
 }))
 app.use(express.json());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));

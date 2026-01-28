@@ -8,6 +8,7 @@ import Header from "./components/Layout/Header";
 import StudentLogin from "./components/Student/StudentLogin";
 import StudentDashboard from "./components/Student/StudentDashboard";
 
+
 function App() {
   const [teacher, setTeacher] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -31,6 +32,7 @@ function App() {
   };
 
   return (
+
     <BrowserRouter>
       {teacher && <Header teacherName={teacher.name} onLogout={handleLogout} />}
       <div className="container">

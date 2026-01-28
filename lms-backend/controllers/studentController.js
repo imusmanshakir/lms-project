@@ -7,24 +7,38 @@ export async function addStudent(req, res) {
     const { name, email, password, age, department, degree } = req.body;
     // const existing = await Student.findOne({ email });
     // if (existing) {
-    //   return res.status(400).json({ message: "Student Already Registrerd" });
+    //   return res.status(400).json({ message: "St
+    // udent Already Registrerd" });
     // }
 
     // userId from token:
     const teacherId = req.userId; // set by authJwt
-    const profileImage = req.file
-      ? `/uploads/students/${req.file.filename}`
-      : null;
+    const profileImage = req.file ? req.file.path : null;
 
     if (!name || !email || !department || !age || !degree || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
     // keep teacher relation
-    const student = new Student({ name,email, password, age, department, degree, profileImage, teacherId, });
+    const student = new Student({
+      name,
+      email,
+      password,
+      age,
+      department,
+      degree,
+      profileImage,
+      teacherId,
+    });
     await student.save();
-
+    console.log("req.file:", req.file);
     try {
-      const info = await sendWelcomeEmail(name, email, password, department, degree);
+      const info = await sendWelcomeEmail(
+        name,
+        email,
+        password,
+        department,
+        degree,
+      );
     } catch (mailErr) {
       console.error("Mail send failed:", mailErr); // do not fail the registration — log the mail error
     }
@@ -49,9 +63,9 @@ export async function loginStudent(req, res) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
-  const token = signToken({ userId: student._id, role: "student",});
+  const token = signToken({ userId: student._id, role: "student" });
 
-  res.json({token,studentName: student.name,role: "student",});
+  res.json({ token, studentName: student.name, role: "student" });
 }
 
 export async function getAllStudents(req, res) {
@@ -61,21 +75,29 @@ export async function getAllStudents(req, res) {
 
     const skip = (page - 1) * limit;
     // only non-deleted students
-    const filter = { isDeleted: false}; // optional per-teacher scope
+    const filter = { isDeleted: false }; // optional per-teacher scope
 
     const totalStudents = await Student.countDocuments(filter);
     const students = await Student.find(filter).skip(skip).limit(limit);
 
-    res.json({ students, totalStudents, totalPages: Math.ceil(totalStudents / limit), currentPage: page,});
+    res.json({
+      students,
+      totalStudents,
+      totalPages: Math.ceil(totalStudents / limit),
+      currentPage: page,
+    });
   } catch (error) {
     console.error("getAllStudents error:", error);
-    res.status(500).json({message: "Server error",error: error.message});
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 }
 
 export async function getMyProfile(req, res) {
   try {
-    const student = await Student.findById(req.userId).populate( "teacherId", "name email" );
+    const student = await Student.findById(req.userId).populate(
+      "teacherId",
+      "name email",
+    );
 
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
@@ -116,8 +138,9 @@ export async function softDeleteStudent(req, res) {
     if (!student) {
       return res.status(404).json({ message: "Student not found" });
     }
-
     student.isDeleted = true;
+    student.deletedAt = new Date();
+    await student.save();
     await student.save();
 
     res.json({ message: "Student soft deleted successfully" });
